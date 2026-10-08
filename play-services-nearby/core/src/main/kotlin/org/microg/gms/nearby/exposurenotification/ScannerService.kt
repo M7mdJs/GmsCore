@@ -163,7 +163,11 @@ class ScannerService : LifecycleService() {
         val pendingIntent = PendingIntentCompat.getService(this, ScannerService::class.java.hashCode(), intent, FLAG_ONE_SHOT or FLAG_UPDATE_CURRENT, false)!!
         if (Build.VERSION.SDK_INT >= 23) {
             // Note: there is no setWindowAndAllowWhileIdle()
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + nextScan, pendingIntent)
+            try {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + nextScan, pendingIntent)
+            } catch (e: SecurityException) {
+                alarmManager.setAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + nextScan, pendingIntent)
+            }
         } else {
             alarmManager.setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + nextScan - SCANNING_TIME_MS / 2, SCANNING_TIME_MS, pendingIntent)
         }

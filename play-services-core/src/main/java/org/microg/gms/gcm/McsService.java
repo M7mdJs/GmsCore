@@ -274,7 +274,11 @@ public class McsService extends Service implements Handler.Callback {
         logd(context, "Scheduling reconnect in " + delay / 1000 + " seconds...");
         PendingIntent pi = PendingIntentCompat.getBroadcast(context, 1, new Intent(ACTION_RECONNECT, null, context, TriggerReceiver.class), 0, false);
         if (SDK_INT >= 23) {
-            alarmManager.setExactAndAllowWhileIdle(ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + delay, pi);
+            try {
+                alarmManager.setExactAndAllowWhileIdle(ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + delay, pi);
+            } catch (SecurityException e) {
+                alarmManager.setAndAllowWhileIdle(ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + delay, pi);
+            }
         } else {
             alarmManager.set(ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + delay, pi);
         }
@@ -290,7 +294,11 @@ public class McsService extends Service implements Handler.Callback {
         logd(context, "Scheduling heartbeat in " + heartbeatMs / 1000 + " seconds...");
         if (SDK_INT >= 23) {
             // This is supposed to work even when running in idle and without battery optimization disabled
-            alarmManager.setExactAndAllowWhileIdle(ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + heartbeatMs, heartbeatIntent);
+            try {
+                alarmManager.setExactAndAllowWhileIdle(ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + heartbeatMs, heartbeatIntent);
+            } catch (SecurityException e) {
+                alarmManager.setAndAllowWhileIdle(ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + heartbeatMs, heartbeatIntent);
+            }
         } else if (SDK_INT >= 19) {
             // With KitKat, the alarms become inexact by default, but with the newly available setWindow we can get inexact alarms with guarantees.
             // Schedule the alarm to fire within the interval [heartbeatMs/3*4, heartbeatMs]

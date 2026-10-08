@@ -15,6 +15,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.app.PendingIntent;
+
+import androidx.core.app.PendingIntentCompat;
+import org.microg.gms.ui.UnpackingRedirectActivity;
 
 import com.google.android.gms.common.internal.CertData;
 import org.microg.gms.accountaction.ErrorResolverKt;
@@ -132,7 +136,8 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                 i.putExtra(KEY_ACCOUNT_NAME, account.name);
                 i.putExtra(KEY_OVERRIDE_PACKAGE, overridePackage);
                 i.putExtra(KEY_OVERRIDE_CERTIFICATE, overrideCert.getBytes());
-                result.putParcelable(KEY_INTENT, i);
+                PendingIntent pi = PendingIntentCompat.getActivity(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT, false);
+                result.putParcelable(KEY_INTENT, UnpackingRedirectActivity.createIntent(context, pi));
                 return result;
             }
         } else {
@@ -163,7 +168,8 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                 } catch (Exception e) {
                     Log.w(TAG, "Can't decode consent data: ", e);
                 }
-                result.putParcelable(KEY_INTENT, i);
+                PendingIntent pi = PendingIntentCompat.getActivity(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT, false);
+                result.putParcelable(KEY_INTENT, UnpackingRedirectActivity.createIntent(context, pi));
                 return result;
             }
         } catch (ReauthenticationRequiredException e) {
