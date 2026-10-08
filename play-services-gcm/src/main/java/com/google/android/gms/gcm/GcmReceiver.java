@@ -100,13 +100,7 @@ public class GcmReceiver extends BroadcastReceiver {
     private void sendIntent(Context context, Intent intent) {
         setResultCodeIfOrdered(500);
         try {
-            ComponentName startedComponent;
-            if (context.checkCallingOrSelfPermission(Manifest.permission.WAKE_LOCK) == PackageManager.PERMISSION_GRANTED) {
-                startedComponent = context.startService(intent);
-            } else {
-                Log.d(TAG, "Missing wake lock permission, service start may be delayed");
-                startedComponent = context.startService(intent);
-            }
+            ComponentName startedComponent = context.startService(intent);
             if (startedComponent == null) {
                 Log.e(TAG, "Error while delivering the message: ServiceIntent not found.");
                 setResultCodeIfOrdered(404);
