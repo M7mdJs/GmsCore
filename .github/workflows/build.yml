@@ -62,9 +62,13 @@ jobs:
         run: "./gradlew assemble${{ matrix.target }}"
       - name: "Execute Gradle lint"
         run: "./gradlew lint${{ matrix.target }}"
+      - name: "Sign Release APKs"
+        run: |
+          keytool -genkey -v -keystore test.keystore -alias test -keyalg RSA -keysize 2048 -validity 10000 -storepass password123 -keypass password123 -dname "CN=Test, O=Test, C=US"
+          find . -name "*release*.apk" -exec $ANDROID_HOME/build-tools/34.0.0/apksigner sign --ks test.keystore --ks-pass pass:password123 {} \;
+        continue-on-error: true
       - name: "Upload APK"
         uses: actions/upload-artifact@v4
         with:
           name: GmsCore-${{ matrix.target }}-APKs
           path: "play-services-core/build/outputs/apk/**/*.apk"
-
