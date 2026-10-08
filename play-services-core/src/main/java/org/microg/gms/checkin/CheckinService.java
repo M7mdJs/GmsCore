@@ -100,9 +100,7 @@ public class CheckinService extends IntentService {
         } catch (Exception e) {
             Log.w(TAG, e);
         } finally {
-            if (intent != null) {
-                // completeWakefulIntent(intent) removed
-            }
+
             schedule(this);
             stopSelf();
         }

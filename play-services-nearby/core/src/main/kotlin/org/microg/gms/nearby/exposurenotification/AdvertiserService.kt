@@ -201,11 +201,7 @@ class AdvertiserService : LifecycleService() {
         val pendingIntent = PendingIntentCompat.getService(this, ACTION_RESTART_ADVERTISING.hashCode(), intent, FLAG_ONE_SHOT or FLAG_UPDATE_CURRENT, false)!!
         when {
             SDK_INT >= 23 ->
-            try {
                 alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + nextSend, pendingIntent)
-            } catch (e: SecurityException) {
-                alarmManager.setAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + nextSend, pendingIntent)
-            }
             else ->
                 alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + nextSend, pendingIntent)
         }
